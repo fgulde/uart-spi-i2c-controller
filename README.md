@@ -1,10 +1,7 @@
 # UART / SPI / I2C Controller
 
-[![CI](https://github.com/OWNER/uart-controller/actions/workflows/ci.yml/badge.svg)](https://github.com/OWNER/uart-controller/actions/workflows/ci.yml)
+[![CI](https://github.com/fgulde/uart-controller/actions/workflows/ci.yml/badge.svg)](https://github.com/fgulde/uart-controller/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
-> Platzhalter `OWNER` im Badge-Link oben durch den tatsächlichen
-> GitHub-Benutzernamen ersetzen, sobald das Repo dort liegt.
 
 Lern- und Portfolio-Projekt: drei klassische serielle Peripherie-Controller
 (UART, SPI, I2C) in SystemVerilog, jeweils als eigenständiger, sauber
