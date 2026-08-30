@@ -1,0 +1,70 @@
+{
+    "version": "2.0.0",
+    "inputs": [
+        {
+            "id": "moduleName",
+            "type": "promptString",
+            "description": "Modulname ohne Endung, z.B. uart_tx, uart_rx, spi_master, i2c_master (erwartet rtl/<name>.sv + tb/tb_<name>.sv)",
+            "default": "uart_tx"
+        }
+    ],
+    "tasks": [
+        {
+            "label": "Simulate: UART TX",
+            "type": "shell",
+            "command": "just sim uart_tx",
+            "options": { "cwd": "${workspaceFolder}" },
+            "group": { "kind": "test", "isDefault": true },
+            "problemMatcher": [],
+            "presentation": { "clear": true, "panel": "shared" }
+        },
+        {
+            "label": "Simulate: Modul (Auswahl)",
+            "type": "shell",
+            "command": "just sim ${input:moduleName}",
+            "options": { "cwd": "${workspaceFolder}" },
+            "group": "test",
+            "problemMatcher": [],
+            "presentation": { "clear": true, "panel": "shared" }
+        },
+        {
+            "label": "Waveform: Modul (Auswahl)",
+            "type": "shell",
+            "command": "just wave ${input:moduleName}",
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": []
+        },
+        {
+            "label": "Synth-Check: Modul (Auswahl, ohne Board)",
+            "type": "shell",
+            "command": "just synth ${input:moduleName}",
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": [],
+            "presentation": { "clear": true, "panel": "shared" }
+        },
+        {
+            "label": "Lint: Modul (Auswahl)",
+            "type": "shell",
+            "command": "just lint ${input:moduleName}",
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": [],
+            "presentation": { "clear": true, "panel": "shared" }
+        },
+        {
+            "label": "Coverage: Modul (Auswahl)",
+            "type": "shell",
+            "command": "just coverage ${input:moduleName}",
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": [],
+            "presentation": { "clear": true, "panel": "shared" }
+        },
+        {
+            "label": "CI: alle Module (lint + sim + synth)",
+            "type": "shell",
+            "command": "just ci",
+            "options": { "cwd": "${workspaceFolder}" },
+            "problemMatcher": [],
+            "presentation": { "clear": true, "panel": "shared" }
+        }
+    ]
+}

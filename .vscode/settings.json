@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "*.sv": "systemverilog",
+        "*.svh": "systemverilog"
+    },
+
+    "[systemverilog]": {
+        "editor.defaultFormatter": "chipsalliance.verible",
+        "editor.formatOnSave": true
+    }
+}

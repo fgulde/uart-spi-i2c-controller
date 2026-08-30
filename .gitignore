@@ -1,0 +1,14 @@
+*.vvp
+*.vcd
+*.log
+xsim.dir/
+
+# Verilator build/coverage artifacts (see `just coverage`)
+obj_dir/
+coverage.dat
+coverage.info
+coverage_annotated/
+
+# OS junk
+Thumbs.db
+.DS_Store

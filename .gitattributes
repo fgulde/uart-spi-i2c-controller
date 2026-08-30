@@ -1,0 +1,6 @@
+# Normalize everything to LF in the repository and on checkout.
+# Important beyond style: scripts/verilator.sh and the shebang-based
+# `ci` recipe in the Justfile start with `#!/usr/bin/env bash` — if
+# that line picks up a trailing \r on checkout, it breaks on the Linux
+# CI runner ("bad interpreter").
+* text=auto eol=lf
