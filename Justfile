@@ -43,7 +43,11 @@ lint MODULE:
 coverage MODULE:
     ./scripts/verilator.sh verilator --binary --timing --coverage -Wall -Wno-fatal --top-module tb_{{MODULE}} \
         rtl/{{MODULE}}.sv tb/tb_{{MODULE}}.sv
-    ./obj_dir/Vtb_{{MODULE}}
+    # +verilator+coverage+file+... is required: the auto-generated
+    # --binary main only writes coverage.dat if told to at runtime,
+    # it doesn't happen implicitly just because --coverage was set at
+    # build time.
+    ./obj_dir/Vtb_{{MODULE}} +verilator+coverage+file+coverage.dat
     ./scripts/verilator.sh verilator_coverage --annotate coverage_annotated/{{MODULE}} coverage.dat
     ./scripts/verilator.sh verilator_coverage --write-info coverage.info coverage.dat
 
