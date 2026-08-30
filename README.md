@@ -1,6 +1,6 @@
 # UART / SPI / I2C Controller
 
-[![CI](https://github.com/fgulde/uart-controller/actions/workflows/ci.yml/badge.svg)](https://github.com/fgulde/uart-controller/actions/workflows/ci.yml)
+[![CI](https://github.com/fgulde/uart-spi-i2c-controller/actions/workflows/ci.yml/badge.svg)](https://github.com/fgulde/uart-spi-i2c-controller/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Lern- und Portfolio-Projekt: drei klassische serielle Peripherie-Controller
@@ -17,7 +17,7 @@ Hardware-Bring-up auf einem Digilent Basys 3 — ist in Arbeit, siehe
 ## Repository-Struktur
 
 ```
-uart-controller/
+uart-spi-i2c-controller/
 ├── .github/
 │   ├── workflows/ci.yml    # Lint + Simulation + Synth-Check + Coverage
 │   ├── ISSUE_TEMPLATE/
