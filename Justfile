@@ -41,12 +41,8 @@ lint MODULE:
 # Actions' ubuntu-latest runner. On Windows this needs a separate
 # MinGW-w64/MSYS2 toolchain; not required for sim/synth/lint above.
 coverage MODULE:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    mkdir -p obj_dir
-    sed "s/__VTOP__/tb_{{MODULE}}/g" scripts/coverage_main.cpp.tmpl > obj_dir/coverage_main.cpp
     ./scripts/verilator.sh verilator --cc --timing --coverage -Wall -Wno-fatal --top-module tb_{{MODULE}} \
-        --exe --build rtl/{{MODULE}}.sv tb/tb_{{MODULE}}.sv obj_dir/coverage_main.cpp
+        --exe --main --build rtl/{{MODULE}}.sv tb/tb_{{MODULE}}.sv
     ./obj_dir/Vtb_{{MODULE}}
     ./scripts/verilator.sh verilator_coverage --annotate coverage_annotated/{{MODULE}} coverage.dat
     ./scripts/verilator.sh verilator_coverage --write-info coverage.info coverage.dat
