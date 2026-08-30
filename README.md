@@ -19,9 +19,7 @@ Hardware-Bring-up auf einem Digilent Basys 3 — ist in Arbeit, siehe
 ```
 uart-spi-i2c-controller/
 ├── .github/
-│   ├── workflows/ci.yml    # Lint + Simulation + Synth-Check + Coverage
-│   ├── ISSUE_TEMPLATE/
-│   └── pull_request_template.md
+│   └── workflows/ci.yml    # Lint + Simulation + Synth-Check
 ├── .vscode/
 │   ├── settings.json       # Formatierung (Verible), Datei-Zuordnung .sv/.svh
 │   ├── tasks.json          # ruft dieselben `just`-Recipes wie Terminal/CI auf
@@ -32,7 +30,7 @@ uart-spi-i2c-controller/
 │   └── tb_uart_tx.sv       # Self-checking Testbench
 ├── scripts/
 │   └── verilator.sh        # Windows/Linux-Kompatibilitätsshim für Verilator
-├── Justfile                 # zentraler Einstiegspunkt: sim/wave/synth/lint/coverage/ci
+├── Justfile                 # zentraler Einstiegspunkt: sim/wave/synth/lint/ci
 ├── LICENSE
 ├── ROADMAP.md               # Phasenplan, offene Fragen, Definition of Done
 └── README.md
@@ -96,15 +94,15 @@ ersetzen die Recipes aber nicht.
    ```powershell
    Get-ChildItem C:\oss-cad-suite -Recurse -File | Unblock-File
    ```
-4. **Windows-Falle 2:** Die von der OSS CAD Suite mitgelieferten
-   `verilator`/`verilator_coverage`-Befehle sind Perl-Wrapper-Skripte;
-   das mitgelieferte Minimal-Perl auf Windows besitzt aber kein
-   `Pod::Usage`-Modul, wodurch die Wrapper sofort abstürzen. `just lint`
-   und `just coverage` rufen deshalb `scripts/verilator.sh` auf, das
-   stattdessen die kompilierte Binary (`verilator_bin.exe`) direkt mit
-   passend gesetztem `VERILATOR_ROOT` aufruft. Unter Linux (z.B. in CI
-   via `apt install verilator`) ist der reguläre `verilator`-Befehl
-   vollständig, der Shim nutzt dort einfach diesen.
+4. **Windows-Falle 2:** Der von der OSS CAD Suite mitgelieferte
+   `verilator`-Befehl ist ein Perl-Wrapper-Skript; das mitgelieferte
+   Minimal-Perl auf Windows besitzt aber kein `Pod::Usage`-Modul,
+   wodurch der Wrapper sofort abstürzt. `just lint` ruft deshalb
+   `scripts/verilator.sh` auf, das stattdessen die kompilierte Binary
+   (`verilator_bin.exe`) direkt mit passend gesetztem `VERILATOR_ROOT`
+   aufruft. Unter Linux (z.B. in CI via `apt install verilator`) ist
+   der reguläre `verilator`-Befehl vollständig, der Shim nutzt dort
+   einfach diesen.
 5. [`just`](https://github.com/casey/just#installation) installieren
    (z.B. `winget install --id Casey.Just`).
 
@@ -118,7 +116,6 @@ just sim uart_tx      # kompilieren + self-checking Testbench laufen lassen
 just wave uart_tx      # wie sim, öffnet danach die Waveform in GTKWave
 just synth uart_tx     # generischer Yosys-Synth-Check, kein Board nötig
 just lint uart_tx      # Verilator --lint-only (zweiter, unabhängiger Linter)
-just coverage uart_tx  # Line-/Toggle-Coverage via Verilator (siehe Coverage)
 just ci                # lint + sim + synth für alle Module in `modules`
 ```
 
@@ -127,13 +124,13 @@ rufen die Tasks in `.vscode/tasks.json` dieselben Recipes auf:
 
 - **Strg+Umschalt+B** (Default Build Task) → `just sim uart_tx`.
 - **Terminal → Task ausführen…** → alle anderen Recipes, für ein
-  abgefragtes Modul (`Simulate`, `Waveform`, `Synth-Check`, `Lint`,
-  `Coverage`) oder als Sammel-Task (`CI: alle Module`).
+  abgefragtes Modul (`Simulate`, `Waveform`, `Synth-Check`, `Lint`)
+  oder als Sammel-Task (`CI: alle Module`).
 
 Beim Speichern einer `.sv`-Datei formatiert Verible automatisch,
 TerosHDL zeigt Lint-Hinweise inline im Editor an.
 
-## Tests, Lint & Coverage
+## Tests & Lint
 
 **Self-checking Testbenches** (`just sim <modul>`): kein manuelles
 Ablesen von Waveforms nötig — `ALL CHECKS PASSED` bzw. `N CHECK(S)
@@ -152,30 +149,21 @@ einen Zustandsübergang tatsächlich braucht.
 zweiter, von Verible unabhängiger statischer Checker — braucht keinen
 C++-Compiler, läuft überall dort, wo auch simuliert wird.
 
-**Coverage** (`just coverage <modul>`): Line- und Toggle-Coverage über
-Verilator (`--coverage`, echtes verilatetes Executable). Das braucht
-zusätzlich einen C++-Compiler + `make` zum Linken — auf dem
-GitHub-Actions-`ubuntu-latest`-Runner standardmäßig vorhanden, auf
-Windows lokal aber **nicht** ohne separat installiertes
-MinGW-w64/MSYS2. Dieser Recipe ist deshalb aktuell CI-verifiziert
-(siehe [CI](#ci)), aber nicht auf jeder lokalen Windows-Maschine ohne
-Weiteres lauffähig — das ist eine bewusste Lücke, kein Bug.
+Bewusst **kein** Code-Coverage-Tooling: Line-/Toggle-Coverage (z.B.
+über Verilator) wäre bei einem Modul mit einer Handvoll gezielter,
+deterministischer Tests kaum aussagekräftig, und Icarus Verilog
+unterstützt SystemVerilogs eigentliches Coverage-Feature —
+`covergroup`/`coverpoint` für Functional Coverage, das Herzstück
+constrained-random-basierter Verifikation (UVM) — ohnehin nicht. Wird
+relevant, sobald randomisierte Tests dazukommen, siehe ROADMAP.md.
 
 ## CI
 
 `.github/workflows/ci.yml` läuft bei jedem Push auf `main` und bei
-jedem Pull Request, mit zwei Jobs:
-
-1. **`lint-sim-synth`** — installiert `iverilog`/`yosys`/`verilator`
-   via `apt`, dann `just ci` (Lint + Simulation + Synth-Check für alle
-   Module). Das ist das eigentliche Gate.
-2. **`coverage`** — installiert zusätzlich `build-essential`, läuft
-   `just coverage` für jedes Modul und lädt den annotierten
-   Coverage-Report als Workflow-Artifact hoch.
-
-Beide Jobs nutzen exakt dieselben `Justfile`-Recipes wie die lokale
-Kommandozeile — es gibt keine Logik, die nur in der CI-YAML oder nur
-lokal existiert.
+jedem Pull Request: installiert `iverilog`/`yosys`/`verilator` via
+`apt`, dann `just ci` (Lint + Simulation + Synth-Check für alle
+Module). Exakt dieselben `Justfile`-Recipes wie lokal — es gibt keine
+Logik, die nur in der CI-YAML oder nur lokal existiert.
 
 ## Module
 

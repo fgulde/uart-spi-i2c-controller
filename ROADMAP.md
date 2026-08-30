@@ -52,10 +52,6 @@ Ein Modul gilt als "fertig" (Häkchen oben), wenn:
    damit `just ci` und die GitHub-Actions-CI es automatisch mitprüfen.
 7. Die Interface-Tabelle in der README für das Modul ergänzt ist.
 
-`just coverage <modul>` ist **kein** Kriterium für "fertig" — der
-Recipe braucht lokal einen C++-Compiler (siehe README, Abschnitt
-Coverage) und ist aktuell nur in der CI garantiert lauffähig.
-
 ## Phase 1 — UART fertigstellen
 
 - [x] `uart_tx`: 8N1-Transmitter mit self-checking Testbench.
@@ -97,24 +93,18 @@ Coverage) und ist aktuell nur in der CI garantiert lauffähig.
 ## Phase 4 — Doku- und Projekt-Politur
 
 - [x] Justfile als einheitlicher Einstiegspunkt (`sim`/`wave`/`synth`/
-      `lint`/`coverage`/`ci`), von Terminal, VS-Code-Tasks und CI
-      gleichermaßen genutzt.
+      `lint`/`ci`), von Terminal, VS-Code-Tasks und CI gleichermaßen
+      genutzt.
 - [x] GitHub Actions CI (`.github/workflows/ci.yml`): Lint + Simulation
-      + Synth-Check als Pflicht-Gate, Coverage-Report als separater Job
-      mit Artifact-Upload.
+      + Synth-Check als Pflicht-Gate.
 - [x] Zweiter, unabhängiger Linter (Verilator `--lint-only`) zusätzlich
       zu Veribles Editor-Formatierung.
-- [x] Line-/Toggle-Coverage via Verilator, CI-verifiziert (lokal unter
-      Windows nur mit zusätzlichem C++-Toolchain lauffähig, siehe
-      README).
 - [ ] README-Interface-Tabellen für SPI und I2C ergänzen (analog zur
       bestehenden UART-Tabelle).
 - [ ] Kurze Blockdiagramme (Zustandsautomat oder Timing-Diagramm) pro
       Modul, z.B. als einfache ASCII- oder SVG-Grafik in `docs/`.
 - [ ] GTKWave-Screenshots der wichtigsten Signale in die README
       einbinden — macht sich gut für den Lebenslauf/GitHub-Profil.
-- [ ] CI-Badge in der README auf den echten `OWNER` umstellen, sobald
-      das Repo auf GitHub liegt.
 
 ## Phase 5 — Basys 3 Bring-up
 
@@ -148,6 +138,12 @@ Erst starten, wenn Phasen 1–3 stehen und das Board vorhanden ist.
   gezeigt werden soll.
 - FIFOs vor/hinter den Peripherien, um Backpressure realistischer zu
   testen.
+- Functional Coverage mit SystemVerilog `covergroup`/`coverpoint`,
+  sobald randomisierte (statt rein direkter) Tests dazukommen — das
+  ist die Coverage-Art, die in der Verifikationspraxis (UVM) tatsächlich
+  zählt, im Gegensatz zu reinem Line-/Toggle-Coverage. Braucht einen
+  SV-vollständigeren Simulator als Icarus Verilog (z.B. Verilator mit
+  entsprechendem Feature-Support oder einen kommerziellen Simulator).
 
 ## Nicht-Ziele (bewusst ausgeklammert)
 
@@ -156,3 +152,12 @@ Erst starten, wenn Phasen 1–3 stehen und das Board vorhanden ist.
 - Eigene UVM-Verifikationsumgebung — für den aktuellen Projektumfang
   Overkill; self-checking Testbenches reichen und sind leichter
   nachvollziehbar für Leser des Repos.
+- Line-/Toggle-Code-Coverage (z.B. via Verilator `--coverage`) —
+  bewusst nicht eingebaut. Bei einer Handvoll gezielter, deterministischer
+  Tests pro Modul ist diese Coverage-Art kaum aussagekräftig, und sie
+  kostete beim Ausprobieren mehrere gescheiterte CI-Läufe für wenig
+  Gegenwert (siehe Git-Historie). Falls Coverage später relevant wird,
+  eher gleich als Functional Coverage angehen (siehe Stretch Goals).
+- Issue-/PR-Templates in `.github/` — Boilerplate für einen
+  Contributor-Workflow, den es bei einem Solo-Projekt ohne offene
+  Issues/PRs noch nicht gibt. Bei Bedarf leicht nachrüstbar.

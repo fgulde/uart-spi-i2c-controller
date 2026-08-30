@@ -51,14 +51,6 @@
             "presentation": { "clear": true, "panel": "shared" }
         },
         {
-            "label": "Coverage: Modul (Auswahl)",
-            "type": "shell",
-            "command": "just coverage ${input:moduleName}",
-            "options": { "cwd": "${workspaceFolder}" },
-            "problemMatcher": [],
-            "presentation": { "clear": true, "panel": "shared" }
-        },
-        {
             "label": "CI: alle Module (lint + sim + synth)",
             "type": "shell",
             "command": "just ci",
