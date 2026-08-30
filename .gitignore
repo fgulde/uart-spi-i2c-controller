@@ -12,3 +12,6 @@ coverage_annotated/
 # OS junk
 Thumbs.db
 .DS_Store
+
+# Claude Code session bookkeeping (never project content)
+.claude/
