@@ -1,0 +1,34 @@
+// Template for the coverage test harness. `just coverage` substitutes
+// __VTOP__ with the actual verilated top class name (V<top-module>)
+// before compiling — see Justfile.
+//
+// Why a hand-written main instead of Verilator's `--binary` convenience
+// flag: its auto-generated main doesn't recognize the runtime plusargs
+// documented for coverage dumping (confirmed by trial against a real
+// CI run: "Unknown runtime argument"). Calling
+// VerilatedContext::coveragep()->write() explicitly is the documented,
+// version-stable public API and doesn't depend on that guesswork.
+#include "verilated.h"
+#include "V__VTOP__.h"
+#if VM_COVERAGE
+#include "verilated_cov.h"
+#endif
+
+int main(int argc, char** argv) {
+    VerilatedContext* contextp = new VerilatedContext;
+    contextp->commandArgs(argc, argv);
+
+    V__VTOP__* top = new V__VTOP__{contextp};
+    while (!contextp->gotFinish()) {
+        top->eval();
+    }
+    top->final();
+
+#if VM_COVERAGE
+    contextp->coveragep()->write("coverage.dat");
+#endif
+
+    delete top;
+    delete contextp;
+    return 0;
+}
