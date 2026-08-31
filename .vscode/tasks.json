@@ -4,7 +4,7 @@
         {
             "id": "moduleName",
             "type": "promptString",
-            "description": "Modulname ohne Endung, z.B. uart_tx, uart_rx, spi_master, i2c_master (erwartet rtl/<name>.sv + tb/tb_<name>.sv)",
+            "description": "Module name without extension, e.g. uart_tx, uart_rx, spi_master, i2c_master (expects rtl/<name>.sv + tb/tb_<name>.sv)",
             "default": "uart_tx"
         }
     ],
@@ -19,7 +19,7 @@
             "presentation": { "clear": true, "panel": "shared" }
         },
         {
-            "label": "Simulate: Modul (Auswahl)",
+            "label": "Simulate: Module (pick)",
             "type": "shell",
             "command": "just sim ${input:moduleName}",
             "options": { "cwd": "${workspaceFolder}" },
@@ -28,14 +28,14 @@
             "presentation": { "clear": true, "panel": "shared" }
         },
         {
-            "label": "Waveform: Modul (Auswahl)",
+            "label": "Waveform: Module (pick)",
             "type": "shell",
             "command": "just wave ${input:moduleName}",
             "options": { "cwd": "${workspaceFolder}" },
             "problemMatcher": []
         },
         {
-            "label": "Synth-Check: Modul (Auswahl, ohne Board)",
+            "label": "Synth-Check: Module (pick, no board)",
             "type": "shell",
             "command": "just synth ${input:moduleName}",
             "options": { "cwd": "${workspaceFolder}" },
@@ -43,7 +43,7 @@
             "presentation": { "clear": true, "panel": "shared" }
         },
         {
-            "label": "Lint: Modul (Auswahl)",
+            "label": "Lint: Module (pick)",
             "type": "shell",
             "command": "just lint ${input:moduleName}",
             "options": { "cwd": "${workspaceFolder}" },
@@ -51,7 +51,7 @@
             "presentation": { "clear": true, "panel": "shared" }
         },
         {
-            "label": "CI: alle Module (lint + sim + synth)",
+            "label": "CI: all modules (lint + sim + synth)",
             "type": "shell",
             "command": "just ci",
             "options": { "cwd": "${workspaceFolder}" },

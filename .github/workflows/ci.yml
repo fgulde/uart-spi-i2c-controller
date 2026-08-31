@@ -6,8 +6,6 @@ on:
   pull_request:
 
 jobs:
-  # Lint + simulate + synth-check every module — same `just ci`
-  # command as run locally.
   ci:
     runs-on: ubuntu-latest
     steps:
